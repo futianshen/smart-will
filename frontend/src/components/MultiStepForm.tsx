@@ -17,8 +17,23 @@ import {
     StepsRoot,
 } from './ui/steps';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { LuCheck } from 'react-icons/lu';
 
 type Recipient = { address: string; percentage: number };
+
+const primaryColor = '#00bcd4';
+const SuccessAnimation = () => {
+    return (
+        <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1, rotate: 360 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+            <LuCheck size={100} color={primaryColor} />
+        </motion.div>
+    );
+};
 
 const MultiStepForm = () => {
     const { theme } = useTheme(); // 動態偵測主題模式
@@ -49,6 +64,9 @@ const MultiStepForm = () => {
         );
     };
 
+    const [step, setStep] = useState(0)
+    console.log({ step })
+
     return (
         <Box
             maxW="600px"
@@ -62,11 +80,11 @@ const MultiStepForm = () => {
             border="1px solid"
             borderColor={theme === 'dark' ? '#222' : '#ddd'}
         >
-            <StepsRoot defaultStep={0} count={3}>
+            <StepsRoot defaultStep={step} count={3}>
                 <StepsList mb={8}>
-                    <StepsItem index={0} title="Will" />
-                    <StepsItem index={1} title="Give" />
-                    <StepsItem index={2} title="Send" />
+                    <StepsItem index={0} onClick={() => setStep(0)} title="Will" />
+                    <StepsItem index={1} onClick={() => setStep(1)} title="Give" />
+                    <StepsItem index={2} onClick={() => setStep(2)} title="Send" />
                 </StepsList>
 
                 <StepsContent index={0}>
@@ -141,18 +159,20 @@ const MultiStepForm = () => {
                     </VStack>
                 </StepsContent>
 
-                <StepsCompletedContent>
-                    <p>All steps are complete!</p>
-                </StepsCompletedContent>
+                {step === 3 && <StepsCompletedContent>
+                    <VStack align="center" justify="center">
+                        <SuccessAnimation />
+                    </VStack>
+                </StepsCompletedContent>}
 
                 <HStack justify="space-between" mt={4}>
                     <StepsPrevTrigger asChild>
-                        <Button variant="outline" color={buttonColor} borderColor={buttonColor}>
+                        <Button variant="outline" color={buttonColor} borderColor={buttonColor} onClick={() => setStep(prev => prev - 1)}>
                             Previous
                         </Button>
                     </StepsPrevTrigger>
                     <StepsNextTrigger asChild>
-                        <Button variant="solid" bg={buttonColor} color="white" _hover={{ bg: '#0097a7' }}>
+                        <Button variant="solid" bg={buttonColor} color="white" _hover={{ bg: '#0097a7' }} onClick={() => setStep(prev => prev + 1)}>
                             Next
                         </Button>
                     </StepsNextTrigger>
