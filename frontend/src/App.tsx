@@ -1,94 +1,31 @@
 import {
-  ConnectButton,
-  useCurrentAccount,
-  useSignTransaction,
-  useSuiClient,
+  // ConnectButton,
+  // useCurrentAccount,
   useSuiClientQuery
 } from '@mysten/dapp-kit';
-import { Transaction } from '@mysten/sui/transactions';
+import { useState } from 'react';
 import './App.css';
+import CreateWillPage from './pages/CreateWillPage';
+import DashboardPage from './pages/DashboardPage';
+import LandingPage from './pages/LandingPage';
 
 function App() {
-  const account = useCurrentAccount();
-  const client = useSuiClient();
-  const { mutateAsync: signTransaction } = useSignTransaction();
+  const [page, setPage] = useState<'landing' | 'dashboard' | 'create-will'>('landing')
+  // const account = useCurrentAccount();
 
-  if (!account) {
-    return <ConnectButton />;
-  }
-
-  // async function sendTransaction() {
-  //   const keypair = Ed25519Keypair.generate();
-
-  //   try {
-  //     const transaction = await signTransaction({
-  //       sender: keypair.getPublicKey().toSuiAddress(),  // 使用生成的公钥作为发送者地址
-  //       transaction: {
-  //         kind: 'call',
-  //         function: 'your_smart_contract_function', // 合约函数名称
-  //       },
-  //       signer: keypair,  // 使用私钥来签署交易
-  //     });
-
-  //     console.log('Transaction sent:', transaction);
-  //   } catch (error) {
-  //     console.error('Error executing transaction:', error);
-  //   }
-  // }
-
-  const handleTransaction = async () => {
-    try {
-      const packageId = "0x200ab82b1ecb6b9f2ba5d5b79989d317c5d84d5ba8851ce093e7f8d87b64c7e0";  // Replace with actual package ID
-      const moduleName = 'hello_world';
-      const functionName = 'mint';
-      const gasBudget = 300000000;
-
-      // Create a new transaction instance
-      const transaction = new Transaction();
-
-      // Add a function call to the transaction
-      transaction.moveCall({
-        target: `${packageId}::${moduleName}::${functionName}`,
-        arguments: [],
-      });
-
-      // Set gas budget
-      transaction.setGasBudget(gasBudget);
-
-      // Sign the transaction
-      const signedTx = await signTransaction({
-        transaction: transaction as any,
-        chain: 'sui:testnet',
-      });
-
-      console.log('Signed Transaction:', signedTx);
-
-      // Execute the transaction
-      const executeResult = await client.executeTransactionBlock({
-        transactionBlock: signedTx.bytes,
-        signature: signedTx.signature,
-        options: { showRawEffects: true },
-      });
-
-      console.log('Transaction Execution Result:', executeResult);
-
-      // Report transaction effects if available
-      signedTx.reportTransactionEffects?.(executeResult.rawEffects as any);
-    } catch (error) {
-      console.error('Transaction Error:', error);
-    }
-  };
+  console.log({ page })
 
   return (
     <main>
-      <button onClick={handleTransaction}>Mint Token</button>
-      <ConnectButton />
-      {account && (
+      {page === "landing" && <LandingPage setPage={setPage} />}
+      {page === "dashboard" && <DashboardPage setPage={setPage} />}
+      {page === "create-will" && <CreateWillPage setPage={setPage} />}
+      {/* {account && (
         <>
           <div>Connected to {account.address}</div>
           <OwnedObjects address={account.address} />
         </>
-      )}
+      )} */}
     </main>
   );
 }
