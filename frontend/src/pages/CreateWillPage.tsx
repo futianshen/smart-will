@@ -1,3 +1,4 @@
+import ParticlesBg from "@/components/ParticlesBg";
 import { useSmartWill } from "@/useSmartWill";
 import { Button, Heading, Input, VStack } from "@chakra-ui/react";
 import { useState } from "react";
@@ -25,6 +26,7 @@ const CreateWillPage = ({ setPage }: { setPage: (page: "landing" | "dashboard" |
 
     return (
         <VStack align="start">
+            <ParticlesBg />
             <button onClick={() => createWill("0xCustodianAddress", ["0xRecipient1", "0xRecipient2"], [50, 50], 12)}>創建遺囑</button>
             <Heading size="md">Create a Will</Heading>
             <Input placeholder="Custodian Address" value={custodian} onChange={(e) => setCustodian(e.target.value)} />

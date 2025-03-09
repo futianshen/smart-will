@@ -1,3 +1,4 @@
+import ParticlesBg from "@/components/ParticlesBg";
 import { useSmartWill } from "@/useSmartWill";
 import { Button, Heading, List, Link, ListItem, Text, VStack } from "@chakra-ui/react";
 import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
@@ -10,6 +11,7 @@ const DashboardPage = ({ setPage }: { setPage: (page: "landing" | "dashboard" | 
 
     return (
         <VStack align="start">
+            <ParticlesBg />
             <Heading size="md">Your Wills</Heading>
             <button onClick={() => renewLife("0xWILL_OBJECT_ID")}>更新存活狀態</button>
             <>
