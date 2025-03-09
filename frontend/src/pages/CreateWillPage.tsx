@@ -1,3 +1,4 @@
+import MultiStepForm from "@/components/MultiStepForm";
 import ParticlesBg from "@/components/ParticlesBg";
 import { useSmartWill } from "@/useSmartWill";
 import { Button, Heading, Input, VStack } from "@chakra-ui/react";
@@ -27,15 +28,7 @@ const CreateWillPage = ({ setPage }: { setPage: (page: "landing" | "dashboard" |
     return (
         <VStack align="start">
             <ParticlesBg />
-            <button onClick={() => createWill("0xCustodianAddress", ["0xRecipient1", "0xRecipient2"], [50, 50], 12)}>創建遺囑</button>
-            <Heading size="md">Create a Will</Heading>
-            <Input placeholder="Custodian Address" value={custodian} onChange={(e) => setCustodian(e.target.value)} />
-            <Input placeholder="Recipients (comma separated)" value={recipients} onChange={(e) => setRecipients(e.target.value)} />
-            <Input placeholder="Proportions (comma separated)" value={proportions} onChange={(e) => setProportions(e.target.value)} />
-            <Input placeholder="Interval (Months)" value={interval} onChange={(e) => setInterval(e.target.value)} />
-            <Button colorScheme="blue" onClick={handleSubmit}>
-                Submit
-            </Button>
+            <MultiStepForm />
         </VStack>
     );
 };

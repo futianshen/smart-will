@@ -10,7 +10,7 @@ import DashboardPage from './pages/DashboardPage';
 import LandingPage from './pages/LandingPage';
 
 function App() {
-  const [page, setPage] = useState<'landing' | 'dashboard' | 'create-will'>('landing')
+  const [page, setPage] = useState<'landing' | 'dashboard' | 'create-will'>('create-will')
   // const account = useCurrentAccount();
 
   console.log({ page })
