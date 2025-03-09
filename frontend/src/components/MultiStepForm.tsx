@@ -20,6 +20,15 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LuCheck } from 'react-icons/lu';
 
+import { Transaction } from '@mysten/sui/transactions';
+import { useEffect } from "react";
+
+import {
+    // useCurrentAccount,
+    useSignTransaction,
+    useSuiClient
+} from '@mysten/dapp-kit';
+
 type Recipient = { address: string; percentage: number };
 
 const primaryColor = '#00bcd4';
@@ -64,8 +73,57 @@ const MultiStepForm = () => {
         );
     };
 
+    const client = useSuiClient();
+    const { mutateAsync: signTransaction } = useSignTransaction();
+
+    const handleTransaction = async () => {
+        try {
+            const packageId = "0x200ab82b1ecb6b9f2ba5d5b79989d317c5d84d5ba8851ce093e7f8d87b64c7e0";  // Replace with actual package ID
+            const moduleName = 'hello_world';
+            const functionName = 'mint';
+            const gasBudget = 300000000;
+
+            // Create a new transaction instance
+            const transaction = new Transaction();
+
+            // Add a function call to the transaction
+            transaction.moveCall({
+                target: `${packageId}::${moduleName}::${functionName}`,
+                arguments: [],
+            });
+
+            // Set gas budget
+            transaction.setGasBudget(gasBudget);
+
+            // Sign the transaction
+            const signedTx = await signTransaction({
+                transaction: transaction as any,
+                chain: 'sui:testnet',
+            });
+
+            await setStep(4)
+
+            console.log('Signed Transaction:', signedTx);
+
+            // Execute the transaction
+            const executeResult = await client.executeTransactionBlock({
+                transactionBlock: signedTx.bytes,
+                signature: signedTx.signature,
+                options: { showRawEffects: true },
+            })
+
+            console.log('Transaction Execution Result:', executeResult);
+
+
+            // Report transaction effects if available
+            signedTx.reportTransactionEffects?.(executeResult.rawEffects as any);
+        } catch (error) {
+            console.error('Transaction Error:', error);
+        }
+    };
+
+
     const [step, setStep] = useState(0)
-    console.log({ step })
 
     return (
         <Box
@@ -159,7 +217,7 @@ const MultiStepForm = () => {
                     </VStack>
                 </StepsContent>
 
-                {step === 3 && <StepsCompletedContent>
+                {step === 4 && <StepsCompletedContent>
                     <VStack align="center" justify="center">
                         <SuccessAnimation />
                     </VStack>
@@ -167,12 +225,20 @@ const MultiStepForm = () => {
 
                 <HStack justify="space-between" mt={4}>
                     <StepsPrevTrigger asChild>
-                        <Button variant="outline" color={buttonColor} borderColor={buttonColor} onClick={() => setStep(prev => prev - 1)}>
+                        <Button variant="outline" color={buttonColor} borderColor={buttonColor} onClick={() => {
+                            setStep(prev => prev - 1)
+
+                        }}>
                             Previous
                         </Button>
                     </StepsPrevTrigger>
                     <StepsNextTrigger asChild>
-                        <Button variant="solid" bg={buttonColor} color="white" _hover={{ bg: '#0097a7' }} onClick={() => setStep(prev => prev + 1)}>
+                        <Button variant="solid" bg={buttonColor} color="white" _hover={{ bg: '#0097a7' }} onClick={() => {
+                            setStep(prev => prev + 1)
+                            if (step === 2) {
+                                handleTransaction()
+                            }
+                        }}>
                             Next
                         </Button>
                     </StepsNextTrigger>
