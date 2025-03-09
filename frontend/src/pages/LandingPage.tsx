@@ -13,7 +13,7 @@ const LandingPage = ({ setPage }: { setPage: (page: "landing" | "dashboard" | "c
 
     useEffect(() => {
         if (connectionStatus === "connected") {
-            setPage("dashboard");
+            setPage("create-will");
         }
     }, [connectionStatus]);
 
